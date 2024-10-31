@@ -21,17 +21,19 @@ class MsituPackage : TurboReactPackage() {
 
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
         return ReactModuleInfoProvider {
-            val moduleInfos = HashMap<String, ReactModuleInfo>()
-            moduleInfos[MsituModule.NAME] = ReactModuleInfo(
+            mapOf(
+                MsituModule.NAME to ReactModuleInfo(
                     MsituModule.NAME,
                     MsituModule.NAME,
-                    false, // canOverrideExistingModule
-                    false, // needsEagerInit
-                    true, // hasConstants
-                    false, // isCxxModule
-                    true // isTurboModule
+                    canOverrideExistingModule = false,
+                    needsEagerInit = false,
+                    hasConstants = true,
+                    isCxxModule = false,
+                    isTurboModule = true
+                )
             )
-            moduleInfos
         }
     }
+
+
 }

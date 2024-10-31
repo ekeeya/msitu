@@ -1,5 +1,6 @@
 import "./global.css"
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {StyleSheet, Text, View} from "react-native";
 // import { verifyInstallation } from 'nativewind';
 const styles = StyleSheet.create({
@@ -33,14 +34,15 @@ const App = () => {
     }, []);
 
   return (
+    <SafeAreaProvider>
       <View className="flex-1">
-        <View className="flex-[3]">
+        <View className="flex-[6]">
           <MapView
               provider={PROVIDER_GOOGLE}
               style={styles.map}
               region={{
-                latitude: 37.78825,
-                longitude: -122.4324,
+                latitude: 0.347596,
+                longitude: 32.582520,
                 latitudeDelta: 0.015,
                 longitudeDelta: 0.0121,
               }}
@@ -53,6 +55,7 @@ const App = () => {
           <Text>{JSON.stringify(s2Point)}</Text>
         </View>
       </View>
+      </SafeAreaProvider>
   )
 }
 export  default  App;
