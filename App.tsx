@@ -17,21 +17,29 @@ const styles = StyleSheet.create({
 });
 
 import RTNMsitu, { type S2Point } from "rtn-msitu/spec/NativeRTNMsitu"
-import {useEffect, useState} from "react";
+import { type LatLng } from "rtn-msitu/spec";
+import {useEffect, useMemo, useState} from "react";
 
 const App = () => {
   // verifyInstallation();
 
-  const [s2Point, setS2Point] = useState<S2Point | {}>({});
-  const [elvis, setElvis] = useState<string | null>();
+  const [basePoints, setBasePoints] =  useState<Array<LatLng>>([]);
+  const [tappedCoord, setTappedCoord] = useState<LatLng>();
 
-    useEffect(() => {
 
-      setElvis(RTNMsitu?.getItem());
-        RTNMsitu?.getS2Point().then(r=>{
-          setS2Point(r);
-        });
-    }, []);
+  useEffect(()=>{
+    let pair = basePoints;
+    if (tappedCoord){
+      if(pair.length < 2){
+        pair.push(tappedCoord)
+      }else{
+        pair[1] = tappedCoord;
+      }
+      setBasePoints(pair);
+    }
+    console.log(pair)
+  }, [tappedCoord])
+   
 
   return (
     <SafeAreaProvider>
@@ -40,6 +48,7 @@ const App = () => {
           <MapView
               provider={PROVIDER_GOOGLE}
               style={styles.map}
+              onPress={(e)=>setTappedCoord(e.nativeEvent.coordinate)}
               region={{
                 latitude: 0.347596,
                 longitude: 32.582520,
@@ -51,8 +60,7 @@ const App = () => {
         </View>
 
         <View className="flex-[1] m-5 items-start">
-          <Text>{elvis}</Text>
-          <Text>{JSON.stringify(s2Point)}</Text>
+          <Text>{JSON.stringify(basePoints)}</Text>
         </View>
       </View>
       </SafeAreaProvider>

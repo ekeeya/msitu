@@ -1,5 +1,8 @@
-import MsituModule, { ComplexObject } from './NativeRTNMsitu'
+import MsituModule from './NativeRTNMsitu'
+import { LatLng, Point } from './types/Coordinate'
 export const TurboMsitu = MsituModule
+
 export type {
-    ComplexObject,
+    LatLng,
+    Point
 }
