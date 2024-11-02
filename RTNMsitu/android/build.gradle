@@ -43,4 +43,8 @@ dependencies {
     implementation 'net.enovea:ks2-geometry:1.0.0'
     implementation 'com.google.android.gms:play-services-maps:19.0.0'
     implementation 'com.rgi-corp:ww-geo-coords:1.0'
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7"
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2") 
 }

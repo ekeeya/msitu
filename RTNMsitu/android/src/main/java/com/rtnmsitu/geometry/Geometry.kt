@@ -26,6 +26,9 @@ package com.rtnmsitu.geometry
 import android.annotation.SuppressLint
 import android.location.Location
 import android.util.Log
+import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.rtnmsitu.utils.Mapper
 import gov.nasa.worldwind.geom.LatLon
 import gov.nasa.worldwind.geom.coords.UTMCoord
 import java.text.SimpleDateFormat
@@ -43,7 +46,7 @@ const val SINE_60 = 0.86602540378 // Sine of 60 degrees...
 /**
  * The mesh direction to use. That is, facing the direction point from where we stand, are we going left or right in our planting?
  */
-enum class MeshDirection {LEFT, RIGHT}
+enum class MeshDirection {LEFT, RIGHT, RADIUS}
 
 // Represents a point where a tree is planted. Units are metres.
 open class Point(internal var x: Double, internal var y: Double) {
@@ -57,6 +60,10 @@ open class Point(internal var x: Double, internal var y: Double) {
         val yNew = x * sinTheta + y * cosTheta
         x = xnew
         y = yNew
+    }
+
+    override fun toString(): String {
+        return "Point(x=$x, y=$y, zone=$zone, hemisphere='$hemisphere')"
     }
 
 
@@ -73,10 +80,11 @@ open class Point(internal var x: Double, internal var y: Double) {
         y = utm.northing
         zone = utm.zone
     }
+
 }
 
 // Represents a planting line...
-open class PlantingLine(private val points: ArrayList<Point>) {
+open class PlantingLine(val points: ArrayList<Point>) {
     constructor(
         startPointX: Double,
         startPointY: Double,
@@ -115,7 +123,7 @@ open class PlantingLine(private val points: ArrayList<Point>) {
 
 
     fun fromUTM(centre: Point): List<LongLat> {
-        return points.map {
+        return this.points.map {
             // We need to shift the basis back to UTM from our point-centred axes
             LongLat(centre.zone, centre.hemisphere, it.x /*+ centre.x*/, it.y /*+ centre.y*/)
         }
@@ -125,6 +133,7 @@ open class PlantingLine(private val points: ArrayList<Point>) {
 var LOCATION_PROVIDER = "Rtk"
 
 class LongLat(var long: Double, var lat: Double) : Location(LOCATION_PROVIDER) {
+
 
     companion object {
         var lastHorizontalAccuracy = 1.0 // Current accuracy
@@ -155,16 +164,19 @@ class LongLat(var long: Double, var lat: Double) : Location(LOCATION_PROVIDER) {
     var longitude = ""
 
     @SuppressLint("SimpleDateFormat")
-    val dateFormat = SimpleDateFormat("HHmmss.SSZ")
+    @JsonIgnore
+    val dateFormat = SimpleDateFormat()
 
     @SuppressLint("SimpleDateFormat")
-    val dateFormatLong = SimpleDateFormat("DDMMyy-HHmmss.SSZ")
+    @JsonIgnore
+    val dateFormatLong = SimpleDateFormat()
 
     /**
      * From UTM.
      * See: https://github.com/rolfrander/geo/blob/master/src/main/java/org/pvv/rolfn/geo/WGS84.java
      */
     constructor(zone: Int, hemisphere: String, easting: Double, northing: Double) : this(0.0, 0.0) {
+        // Log.d("LONGLAT", "$zone, $hemisphere, $easting, $northing")
         val ll = UTMCoord.locationFromUTMCoord(zone, hemisphere, easting, northing)
         lat = ll.latitude.degrees
         long = ll.longitude.degrees
@@ -236,7 +248,11 @@ class LongLat(var long: Double, var lat: Double) : Location(LOCATION_PROVIDER) {
             skip = true
         }
         if(!skip){
-            dateFormat.parse(l[1] + "+0000").also { timeStamp = it }
+            dateFormat.parse(l[1] + "+0000").also {
+                if (it != null) {
+                    timeStamp = it
+                }
+            }
             lat = parseDegrees(l[2], l[3])
             latitude = l[2] + l[3]
             long = parseDegrees(l[4], l[5])
@@ -277,7 +293,7 @@ class LongLat(var long: Double, var lat: Double) : Location(LOCATION_PROVIDER) {
         }
         if (!skip){
             val dd = l[9] + "-" + l[1] + "+0000"
-            timeStamp = dateFormatLong.parse(dd)
+            timeStamp = dateFormatLong.parse(dd)!!
 
             lat = parseDegrees(l[3], l[4])
             latitude = l[3] + l[4]
@@ -400,6 +416,7 @@ class Geometry {
             val l = ArrayList<PlantingLine>()
             val xDelta = GAP_SIZE_METRES * cos(theta)
             val yDelta = GAP_SIZE_METRES * sin(theta)
+            Log.d("mesh", "GAP Size: $GAP_SIZE_METRES, MeshSize: $MAX_MESH_SIZE")
 
             // The next line starting point is always a 90 degree turn from the last starting point.
             val linesDirection = if  (plantingDirection == MeshDirection.RIGHT)  1  else -1
@@ -420,25 +437,40 @@ class Geometry {
 
                 xSkip *= -1 // (xSkip + 1) % 2 // skip forward by half the displacement, or back by the same for each line...
             }
+            generateLongLatLines(startPoint, l)
             return l
         }
 
 
-        fun generateLongLat(
-            c: Point,
-            a: List<PlantingLine>,
-            printLine: (List<LongLat>) -> Unit
+        fun generateLongLatLines(
+            center: Point,
+            lines: List<PlantingLine>
         ): List<List<LongLat>> {
-            val al = ArrayList<List<LongLat>>()
-            for (l in a) {
-
-                val xl = l.fromUTM(c)
-                al.add(xl) // Use UTM centre...
-
-                printLine(xl) // Cause it to be printed
+            try {
+                val al = ArrayList<List<LongLat>>()
+                for (line in lines) {
+                    val xl = line.fromUTM(center)
+                    al.add(xl) // Use UTM centre...
+                }
+                return al
+            }catch (e:Exception){
+                e.message?.let { Log.e("MSITU-ERROR", it) }
+                return arrayListOf()
             }
-
-            return al
         }
+
+
+        fun generateLongLatLine(
+            center: Point,
+            line: PlantingLine
+        ): List<LongLat> {
+            try{
+                return line.fromUTM(center)
+            }catch (e:Exception){
+                e.message?.let { Log.e("MSITU-ERROR", it) }
+            }
+            return arrayListOf()
+        }
+
     }
 }

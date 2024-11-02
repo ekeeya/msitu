@@ -34,7 +34,7 @@ import kotlin.math.*
  */
 class UTM(
     var zone: Int = 0,
-    var letter: Char = 0.toChar().toUpperCase(),
+    var letter: Char = 0.toChar().uppercaseChar(),
     var easting: Double = 0.0,
     var northing: Double = 0.0
 ) {
@@ -69,7 +69,7 @@ class UTM(
     constructor(utm: String) : this() {
         val parts = utm.split(" ").toTypedArray()
         zone = parts[0].toInt()
-        letter = parts[1].toUpperCase()[0]
+        letter = parts[1].uppercase()[0]
         easting = parts[2].toDouble()
         northing = parts[3].toDouble()
     }

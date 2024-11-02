@@ -1,8 +1,10 @@
 import MsituModule from './NativeRTNMsitu'
-import { LatLng, Point } from './types/Coordinate'
+import * as Coords from './types/common/Coordinate'
+import * as Backend from './types/backend/Backend'
+
 export const TurboMsitu = MsituModule
 
 export type {
-    LatLng,
-    Point
+    Coords,
+    Backend
 }
