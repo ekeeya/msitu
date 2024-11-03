@@ -1,108 +1,44 @@
 import "./global.css"
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+
+import React from 'react';
+import {StatusBar, View, TouchableOpacity, Text} from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {AlertNotificationRoot} from 'react-native-alert-notification';
+import AppNavigation from './src/navigation/AppNavigation.js';
+import Icon from 'react-native-vector-icons/Ionicons';
+import AntDesignIcon from 'react-native-vector-icons/AntDesign'
+//import {Provider} from 'react-redux';
+//import {store} from './src/store/store.js';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {Button, StyleSheet, Text, View} from "react-native";
-// import { verifyInstallation } from 'nativewind';
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    height: 400,
-    width: 400,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
-});
 
-import RTNMsitu from "rtn-msitu/spec/NativeRTNMsitu"
-import { type LatLng } from "./RTNMsitu/spec/types/common/Coordinate";
-import {useEffect, useState} from "react";
-import { type PlantingLine } from "rtn-msitu/spec/types/backend/Backend";
-import { Point } from "./RTNMsitu/spec/types/common/Coordinate";
-
-const App = () => {
-  // verifyInstallation();
-
-  const [basePoints, setBasePoints] =  useState<Array<LatLng>>([]);
-  const [tappedCoord, setTappedCoord] = useState<LatLng>();
-  const [plantingLines, setPlantingLines] = useState<Array<PlantingLine>>([]);
-  const [point, setPoint] = useState<Point>()
-
-  useEffect(()=>{
-    let pair = basePoints;
-    if (tappedCoord){
-      if(pair.length < 2){
-        pair.push(tappedCoord)
-      }else{
-        pair[1] = tappedCoord;
-      }
-      setBasePoints(pair);
-    }
-    console.log(pair)
-  }, [tappedCoord])
-   
-
-  const generateMesh = async()=>{
-    if(basePoints.length < 2){
-      return;
-    }
-    const first=basePoints[0];
-    const second=basePoints[1];
-    
-    const p =  RTNMsitu.toPoint(first);
-    setPoint(p as Point);
-    const lines = await RTNMsitu.generateMesh(
-     {latitude:first.latitude, longitude:first.longitude},
-     {latitude:second.latitude, longitude:second.longitude},
-      "LEFT",
-      "TRIANGLE",
-      5,
-      100);
-      setPlantingLines(lines);
-  }
-
-  const generateCoordinates = async()=>{
-    if(plantingLines.length > 0){
-      const lines = plantingLines.slice(0,5);
-      const allLines = await RTNMsitu.linesToCoords(lines, point);
-      console.log(allLines)
-    }
-  }
+function App({navigation}): React.JSX.Element {
   return (
-    <SafeAreaProvider>
-      <View className="flex-1">
-        <View className="flex-[8]">
-          <MapView
-              provider={PROVIDER_GOOGLE}
-              style={styles.map}
-              onPress={(e)=>setTappedCoord(e.nativeEvent.coordinate)}
-              region={{
-                latitude: 0.347596,
-                longitude: 32.582520,
-                latitudeDelta: 0.015,
-                longitudeDelta: 0.0121,
-              }}
-          >
-          </MapView>
-        </View>
+      <GestureHandlerRootView style={{flex: 1}}>
 
-        <View className="flex-[1] m-5 items-start">
-          <Text>{JSON.stringify(point)}</Text>
-        </View>
-        <View className="flex flex-row gap-2 justify-center">
-          <Button
-            title="Generate Mesh"
-            onPress={()=>generateMesh()}
-          />
-          <Button
-            title="Coords"
-            onPress={()=>generateCoordinates()}
-          />
+        <SafeAreaProvider>
+          <StatusBar animated translucent backgroundColor="transparent" barStyle="dark-content"  />
+          <AlertNotificationRoot>
+            <AppNavigation />
+            <View className="absolute flex flex-row justify-between top-10 left-2 right-2 bg-white/70 p-2 rounded-lg items-center z-10">
+        <TouchableOpacity
+          className='bg-white/90 p-2 border border-black rounded-lg'
+          onPress={() => {
+            navigation.openDrawer();
+          }}
+        >
+          <Icon name="menu-outline" size={30} color="teal" />
+        </TouchableOpacity>
+        <Text className='font-avenirBold'>Project Digital Solutions</Text>
+        <View className='flex flex-row'>
+          <TouchableOpacity className='bg-white/100 border border-black p-2 rounded-lg'>
+            <AntDesignIcon name="addfolder" size={30} color="teal" />
+          </TouchableOpacity>
         </View>
       </View>
-      </SafeAreaProvider>
-  )
+          </AlertNotificationRoot>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+  );
 }
-export  default  App;
+
+export default App;

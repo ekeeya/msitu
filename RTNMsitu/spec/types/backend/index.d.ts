@@ -1,4 +1,4 @@
-import { Point } from "../common/Coordinate"
+import { Point } from "../common"
 
 export type PlantingLine = {
         points:Array<Point>

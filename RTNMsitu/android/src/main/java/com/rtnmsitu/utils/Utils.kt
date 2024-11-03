@@ -53,7 +53,6 @@ object Utils {
         return resultArray
     }
     private fun longLatToWritable(o: LongLat): ReadableMap {
-        Log.d("MSITU", "$o ${Mapper.toWritableMap(o)}")
         val map = Arguments.createMap()
         map.putDouble("latitude", o.lat)
         map.putDouble("longitude", o.long)

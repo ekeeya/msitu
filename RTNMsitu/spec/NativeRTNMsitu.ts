@@ -1,12 +1,5 @@
 import { TurboModule, TurboModuleRegistry } from "react-native";
-import { type PlantingLine, type LongLat } from "./types/backend/Backend";
-
-export interface ComplexObject {
-    id: string;
-    name: string;
-    aliases: string[];
-}
-
+import { type PlantingLine, type LongLat } from "./types/backend";
 
 export interface Spec extends TurboModule {
 

@@ -11,7 +11,13 @@ module.exports = {
   ],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: { 
+        avenir: ['AvenirBook', 'sans-serif'],
+        avenirMedium: ['AvenirMedium', 'sans-serif'],
+        avenirBold: ['AvenirBold', 'sans-serif']
+      },
+    },
   },
   plugins: [],
 }

@@ -4,6 +4,10 @@ export enum MeshDirection {
     RADIUS = "RADIUS"
   }
 
+  export enum MeshType{
+    TRIANGLE = "TRIANGLE",
+    SQUARE = "SQUARE"
+  }
 
 export type LatLng = {
     latitude: number;
