@@ -8,11 +8,13 @@ import Ionicon from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import AppStack from './AppStack';
-import colors from 'tailwindcss/colors';
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { Dimensions, View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import Divider from '../components/utilities/Divider';
+import NewProject from '../components/projects/NewProject';
+import { setShowCreateNewProjects, setShowProjectList } from "../store/modal"
+import ProjectList from '../components/projects/ProjectList';
 const Drawer = createDrawerNavigator();
 
 const useDrawerWidth = () => {
@@ -35,6 +37,7 @@ const useDrawerWidth = () => {
   return { drawerWidth, isPortrait };
 };
 function CustomDrawerContent({ navigation, isPortrait }) {
+  const dispatch = useDispatch()
   return (
     <DrawerContentScrollView contentContainerStyle={{ flexGrow: 1 }}>
       {/* Close Button */}
@@ -56,7 +59,7 @@ function CustomDrawerContent({ navigation, isPortrait }) {
             labelStyle={styles.label}
             icon={() => <AntDesignIcon name="folderopen" size={24} color="black" />}
             onPress={() => {
-              console.log("Nope");
+              dispatch(setShowProjectList(true))
             }}
           />
           <DrawerItem
@@ -156,25 +159,38 @@ function CustomDrawerContent({ navigation, isPortrait }) {
 
 export default function DrawerNavigation() {
   const { drawerWidth, isPortrait } = useDrawerWidth();
+  const modalStore = useSelector(selector => selector.modals);
+  const dispatch = useDispatch()
   return (
-    <Drawer.Navigator
-      drawerContent={props => <CustomDrawerContent {...props} isPortrait={isPortrait} />}>
-      <Drawer.Screen
-        options={{
-          headerShown: false,
-          overlayColor: 'transparent',
-          drawerStyle: {
-            marginTop: 35,
-            width: drawerWidth,
-          },
-        }}
-        name="Drawer"
-        component={AppStack}
+    <>
+      <Drawer.Navigator
+        drawerContent={props => <CustomDrawerContent {...props} isPortrait={isPortrait} />}>
+        <Drawer.Screen
+          options={{
+            headerShown: false,
+            overlayColor: 'transparent',
+            drawerStyle: {
+              marginTop: 35,
+              width: drawerWidth,
+            },
+          }}
+          name="Drawer"
+          component={AppStack}
+        />
+      </Drawer.Navigator>
+      <NewProject
+        onClose={() => dispatch(setShowCreateNewProjects(false))}
+        show={modalStore.showCreateNewProjects} />
 
-      />
-    </Drawer.Navigator>
+      <ProjectList
+        show={modalStore.showProjectList}
+        onClose={() => dispatch(setShowProjectList(false))}
+      >
+        <Text>List of projects</Text>
+      </ProjectList>
+    </>
   );
 }
 const styles = StyleSheet.create({
-  label: { fontSize: 14, color: 'black', fontFamily:"AvenirMeduim", fontWeight:'' }
+  label: { fontSize: 14, color: 'black', fontFamily: "AvenirMeduim" }
 });

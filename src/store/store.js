@@ -3,7 +3,7 @@ import {configureStore} from '@reduxjs/toolkit';
 import loggerMiddleware from 'redux-logger';
 
 const store = configureStore({
-  // reducer: rootReducer,
+  reducer: rootReducer,
   middleware: getDefaultMiddleware => {
     return getDefaultMiddleware({
       serializableCheck: false,
