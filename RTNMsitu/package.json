@@ -2,10 +2,11 @@
   "name": "rtn-msitu",
   "version": "10.07.1",
   "description": "This module is used to interface S2 Geometry library for Digital Solutions RTK app for tree planting",
-  "react-native": "js/index",
-  "source": "js/index",
+  "react-native": "index",
+  "source": "index",
   "files": [
     "js",
+    "spec",
     "android",
     "ios",
     "rtn-msitu.podspec",

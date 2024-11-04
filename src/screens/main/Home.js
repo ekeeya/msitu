@@ -3,13 +3,16 @@ import { Text, View,  Alert, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntDesignIcon from 'react-native-vector-icons/AntDesign'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Geolocation from '@react-native-community/geolocation';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ProjectList from '../../components/projects/ProjectList';
 import {setShowCreateNewProjects} from "../../store/modal"
 import { useDispatch } from 'react-redux';
 
 const Home = ({ navigation }) => {
+
+  const mapRef = useRef(null);
 
   const [createProject, setCreateProject] = useState(false)
   const [areaMode, setAreaMode] = useState(false);
@@ -29,7 +32,11 @@ const Home = ({ navigation }) => {
     console.log(line)
   };
 
-  
+  useEffect(() => {
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(initialRegion, 1000);
+    }
+  }, [initialRegion]);
 
   useEffect(() => {
     // Request permission and get the current location
@@ -56,6 +63,7 @@ const Home = ({ navigation }) => {
   };
 
   const handleMapPress = (e) => {
+    console.log(e.nativeEvent.coordinate)
     if (areaMode) {
       const newCoordinate = e.nativeEvent.coordinate;
       setPolygonCoordinates([...polygonCoordinates, newCoordinate]);
@@ -74,6 +82,7 @@ const Home = ({ navigation }) => {
     <View className="flex-1 relative">
       {/* Map View */}
       <MapView
+        ref={mapRef}
         provider={PROVIDER_GOOGLE}
         onPress={handleMapPress}
         mapType={MAP_TYPES.TERRAIN}
@@ -151,14 +160,15 @@ const Home = ({ navigation }) => {
             </View>}
         </View>
       </View>
-      {/* <View className="absolute bottom-4 right-4 z-10">
+      
+      <View className="absolute bottom-4 right-4 z-10">
         <TouchableOpacity
-          className="bg-white/90 p-4 rounded-lg border border-gray-400"
-          onPress={() => console.log("Right Button Pressed")}
-        >
-          <Text className="text-black font-semibold">Cyrus Mode</Text>
+          onPress={() => getCurrentLocation()}
+          className={`bg-white p-2 rounded`}>
+            
+            <MaterialIcons name="my-location" size={30} color="green" />
         </TouchableOpacity>
-      </View> */}
+      </View>
 
       
 

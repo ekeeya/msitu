@@ -9,24 +9,27 @@ import AppNavigation from './src/navigation/AppNavigation.js';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { store } from './src/store/store.js';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PaperProvider } from 'react-native-paper';
 
 function App(): React.JSX.Element {
-  
-  
+
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-
-      <SafeAreaProvider>
-        <StatusBar animated translucent backgroundColor="transparent" barStyle="dark-content" />
+      
+        <SafeAreaProvider>
         <AlertNotificationRoot>
-          <Provider store={store}>
-            <AppNavigation />
-            <ModalPortal />
+          <PaperProvider>
+            <StatusBar animated translucent backgroundColor="transparent" barStyle="dark-content" />
 
-          </Provider>
-
-        </AlertNotificationRoot>
-      </SafeAreaProvider>
+            <Provider store={store}>
+              <AppNavigation />
+              <ModalPortal />
+            </Provider>
+          </PaperProvider>
+          </AlertNotificationRoot>
+        </SafeAreaProvider>
+      
     </GestureHandlerRootView>
   );
 }

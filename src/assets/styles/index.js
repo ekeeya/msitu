@@ -9,6 +9,9 @@ const styles  = StyleSheet.create({
     text: {
       fontFamily: "Avenir"
     },
+    textMedium: {
+      fontFamily: "AvenirMedium"
+    },
     buttonText:{
       fontFamily: "AvenirBold"
     }

@@ -10,5 +10,5 @@ const store = configureStore({
     }).concat(loggerMiddleware);
   },
 });
-
+  
 export {store};

@@ -26,7 +26,7 @@ interface Bridge{
 }
 
 
-export default class BridgeService implements Bridge {
+export class BridgeService implements Bridge {
 
     lineToCoords(points: Point[], center: Point): Promise<LongLat[] | []> {
         return new Promise<LongLat[] | []>((resolve, reject) => {
